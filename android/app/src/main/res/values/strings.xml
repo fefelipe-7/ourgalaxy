@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Our Galaxy</string>
+    <string name="title_activity_main">Our Galaxy</string>
+    <string name="package_name">com.ourgalaxy.app</string>
+    <string name="custom_url_scheme">com.ourgalaxy.app</string>
+</resources>
