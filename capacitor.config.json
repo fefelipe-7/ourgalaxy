@@ -1,0 +1,14 @@
+{
+  "appId": "com.sincronia.app",
+  "appName": "Sincronia",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}
