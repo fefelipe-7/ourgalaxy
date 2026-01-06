@@ -1,0 +1,11 @@
+{
+  "iconPath": "public/favicon.png",
+  "splashPath": "public/favicon.png",
+  "platforms": {
+    "android": {
+      "icon": {
+        "sources": ["public/favicon.png"]
+      }
+    }
+  }
+}
