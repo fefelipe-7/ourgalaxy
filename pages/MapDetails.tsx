@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Navigation, Heart, MapPin } from 'lucide-react';
+import { useNavigation } from '../lib/useNavigation';
 
 const MapDetails: React.FC = () => {
   const navigate = useNavigate();
+  const { goBack } = useNavigation();
   const [isLiked, setIsLiked] = useState(false);
 
   return (
     <div className="min-h-screen bg-cozy-cream px-6 pt-10 pb-8 flex flex-col">
       <div className="flex justify-between items-center mb-8">
         <button
-           onClick={() => navigate(-1)}
+           onClick={goBack}
            className="w-10 h-10 rounded-full bg-white shadow-soft flex items-center justify-center text-cozy-deep hover:bg-cozy-sand transition-all active:scale-90"
         >
            <ArrowLeft size={20} />

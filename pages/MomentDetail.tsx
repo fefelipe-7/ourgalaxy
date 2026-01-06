@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft, Calendar, Clock, Loader2 } from 'lucide-react';
 import { momentService } from '../services/momentService';
 import { Moment } from '../lib/supabaseClient';
+import { useNavigation } from '../lib/useNavigation';
 
 const AUTHORS_INFO = {
   nana: {
@@ -19,6 +20,7 @@ const AUTHORS_INFO = {
 
 const MomentDetail: React.FC = () => {
   const navigate = useNavigate();
+  const { goBack } = useNavigation();
   const { id } = useParams();
   const [moment, setMoment] = useState<Moment | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,7 +70,7 @@ const MomentDetail: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6 pt-4">
         <button 
-           onClick={() => navigate(-1)}
+           onClick={goBack}
            className="w-10 h-10 rounded-full bg-white shadow-soft flex items-center justify-center text-cozy-deep hover:bg-cozy-sand transition-all active:scale-90"
         >
            <ChevronLeft size={20} />

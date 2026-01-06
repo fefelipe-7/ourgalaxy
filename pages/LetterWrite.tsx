@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Send, X, ChevronLeft, Check, Sparkles, AlertCircle, Trash2 } from 'lucide-react';
 import { letterService } from '../services/letterService';
+import { useNavigation } from '../lib/useNavigation';
 
 const RECIPIENTS = [
   { 
@@ -24,6 +25,7 @@ const RECIPIENTS = [
 
 const LetterWrite: React.FC = () => {
   const navigate = useNavigate();
+  const { goBack, goToHome } = useNavigation();
   const [step, setStep] = useState<'recipient' | 'write'>('recipient');
   const [recipient, setRecipient] = useState<typeof RECIPIENTS[0] | null>(null);
   const [text, setText] = useState('');
@@ -65,14 +67,14 @@ const LetterWrite: React.FC = () => {
     if (text.trim().length > 0) {
         setShowDiscardConfirm(true);
     } else {
-        navigate('/home');
+        goToHome();
     }
   };
 
   // Confirma o descarte
   const handleDiscard = () => {
       setShowDiscardConfirm(false);
-      navigate('/home');
+      goToHome();
   };
 
   if (status === 'success') {

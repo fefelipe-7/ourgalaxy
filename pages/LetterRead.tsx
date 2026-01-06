@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { X, Heart, Infinity as InfinityIcon, Loader2 } from 'lucide-react';
 import { letterService } from '../services/letterService';
+import { useNavigation } from '../lib/useNavigation';
 
 const PROFILES = {
   nana: {
@@ -18,6 +19,7 @@ const PROFILES = {
 
 const LetterRead: React.FC = () => {
   const navigate = useNavigate();
+  const { goToHome } = useNavigation();
   const { id } = useParams();
   
   const [letter, setLetter] = useState<any | null>(null);
@@ -78,7 +80,7 @@ const LetterRead: React.FC = () => {
         <p className="text-cozy-deep font-serif font-bold mb-2">Oops!</p>
         <p className="text-cozy-sageDark text-sm mb-6">{error || 'Carta não encontrada'}</p>
         <button 
-          onClick={() => navigate('/home')}
+          onClick={goToHome}
           className="text-cozy-deep font-bold underline underline-offset-4"
         >
           voltar
@@ -116,7 +118,7 @@ const LetterRead: React.FC = () => {
              )}
          </div>
          <button 
-            onClick={() => navigate('/home')}
+            onClick={goToHome}
             className="w-10 h-10 rounded-full bg-white shadow-soft flex items-center justify-center text-cozy-deep hover:bg-cozy-sand transition-colors active:scale-90"
          >
             <X size={20} />

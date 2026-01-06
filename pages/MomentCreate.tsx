@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Camera, Video, Calendar, Clock, AlignLeft, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
 import { momentService } from '../services/momentService';
+import { useNavigation } from '../lib/useNavigation';
 
 const AUTHORS = [
   { 
@@ -20,6 +21,7 @@ const AUTHORS = [
 
 const MomentCreate: React.FC = () => {
   const navigate = useNavigate();
+  const { goBack, goToMoments } = useNavigation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [step, setStep] = useState<'author' | 'details'>('author');
@@ -52,7 +54,7 @@ const MomentCreate: React.FC = () => {
         description,
         author_id: author.id
       });
-      navigate('/moments');
+      goToMoments();
     } catch (error) {
       console.error('Erro ao salvar momento:', error);
       alert('Não foi possível salvar o momento. Tente novamente.');
