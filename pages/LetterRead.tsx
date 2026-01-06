@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { X, Heart, Infinity as InfinityIcon } from 'lucide-react';
-// import { letterService } from '../services/letterService';
+import { X, Heart, Infinity as InfinityIcon, Loader2 } from 'lucide-react';
+import { letterService } from '../services/letterService';
 
 const PROFILES = {
   nana: {
@@ -19,21 +19,34 @@ const PROFILES = {
 const LetterRead: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const location = useLocation();
   
-  const initialLikes = location.state?.likes || 1; 
-  const authorKey = (location.state?.author as keyof typeof PROFILES) || 'nana';
-  const author = PROFILES[authorKey];
-
+  const [letter, setLetter] = useState<any | null>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [likes, setLikes] = useState(initialLikes);
-  const [isEternized, setIsEternized] = useState(initialLikes >= 2);
+  const [likes, setLikes] = useState(1);
+  const [isEternized, setIsEternized] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Exemplo de busca real:
-    // letterService.getLetterById(id).then(data => ...);
-    const timer = setTimeout(() => setIsVisible(true), 100);
-    return () => clearTimeout(timer);
+    const fetchLetter = async () => {
+      if (!id) return;
+      try {
+        setLoading(true);
+        const data = await letterService.getLetterById(id);
+        setLetter(data);
+        setLikes(data.likes || 1);
+        setIsEternized(data.likes >= 2);
+        
+        const timer = setTimeout(() => setIsVisible(true), 100);
+        return () => clearTimeout(timer);
+      } catch (err) {
+        console.error('Erro ao buscar carta:', err);
+        setError('Não foi possível carregar a carta');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLetter();
   }, [id]);
 
   useEffect(() => {
@@ -41,15 +54,44 @@ const LetterRead: React.FC = () => {
   }, [likes]);
 
   const handleLike = async () => {
-    // Exemplo backend:
-    // await letterService.toggleLike(Number(id), likes);
-    setLikes(likes === 1 ? 2 : 1);
+    if (!letter) return;
+    try {
+      const updated = await letterService.toggleLike(letter.id, likes);
+      setLikes(updated.likes);
+    } catch (err) {
+      console.error('Erro ao atualizar like:', err);
+    }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-cozy-cream flex items-center justify-center">
+        <Loader2 className="animate-spin text-cozy-sage" size={40} />
+      </div>
+    );
+  }
+
+  if (error || !letter) {
+    return (
+      <div className="min-h-screen bg-cozy-cream flex flex-col items-center justify-center p-8 text-center">
+        <p className="text-cozy-clay text-lg font-serif mb-4">⚠️</p>
+        <p className="text-cozy-deep font-serif font-bold mb-2">Oops!</p>
+        <p className="text-cozy-sageDark text-sm mb-6">{error || 'Carta não encontrada'}</p>
+        <button 
+          onClick={() => navigate('/home')}
+          className="text-cozy-deep font-bold underline underline-offset-4"
+        >
+          voltar
+        </button>
+      </div>
+    );
+  }
+
+  const author = PROFILES[letter.author_id as keyof typeof PROFILES] || PROFILES.nana;
   const getTransitionClass = (delay: string) => 
     `transition-all duration-1000 ease-out transform ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${delay}`;
 
-  const themeColor = authorKey === 'nana' ? 'text-cozy-clay' : 'text-cozy-sageDark';
+  const themeColor = letter.author_id === 'nana' ? 'text-cozy-clay' : 'text-cozy-sageDark';
 
   return (
     <div className="min-h-screen bg-cozy-cream flex flex-col px-6 pt-safe-top pb-12 relative transition-colors duration-1000">
@@ -65,7 +107,7 @@ const LetterRead: React.FC = () => {
       <div className="flex justify-between items-center mb-6 pt-4 relative z-10">
          <div className="flex items-center gap-2">
              <span className="text-xs font-bold text-cozy-sageDark bg-cozy-sageLight/30 px-3 py-1 rounded-full tracking-wider">
-                12 de outubro
+                {new Date(letter.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
              </span>
              {isEternized && (
                  <span className="animate-fade-in flex items-center gap-1 text-xs font-bold text-cozy-clay bg-white/50 px-3 py-1 rounded-full tracking-wider border border-cozy-clay/20">
@@ -84,7 +126,7 @@ const LetterRead: React.FC = () => {
       <div className={`flex-1 transition-all duration-1000 ease-out relative z-10 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
         <div className={`bg-white rounded-[2.5rem] p-8 min-h-[65vh] relative overflow-hidden transition-all duration-700 shadow-soft border ${isEternized ? 'border-cozy-clay/30 shadow-glow' : 'border-cozy-sageLight/10'}`}>
             
-            {/* Cabeçalho da Carta com Foto - Reduzido de w-20 para w-16 */}
+            {/* Cabeçalho da Carta com Foto */}
             <div className={`flex flex-col items-center mb-8 ${getTransitionClass('delay-100')}`}>
                 <div className="w-16 h-16 rounded-full p-1 bg-white shadow-md mb-3">
                     <img src={author.image} alt={author.name} className="w-full h-full object-cover rounded-full" />
@@ -96,16 +138,7 @@ const LetterRead: React.FC = () => {
 
             <div className="space-y-6 font-serif text-lg leading-loose text-cozy-deep/90 relative z-10 text-center">
                 <p className={getTransitionClass('delay-300')}>
-                    sobre o que conversamos ontem, fiquei pensando muito no silêncio que ficou entre a gente.
-                </p>
-                <p className={getTransitionClass('delay-500')}>
-                    não acho que precisamos resolver tudo agora. algumas coisas precisam de tempo para assentar.
-                </p>
-                <p className={getTransitionClass('delay-700')}>
-                    só queria dizer que, apesar do silêncio, ainda estou aqui.
-                </p>
-                <p className={`font-bold mt-8 ${themeColor} ${getTransitionClass('delay-1000')}`}>
-                    com amor.
+                    {letter.content}
                 </p>
             </div>
             

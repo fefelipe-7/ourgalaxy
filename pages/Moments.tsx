@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, Plus, Image as ImageIcon } from 'lucide-react';
+import { Camera, Plus, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { momentService } from '../services/momentService';
 import { Moment } from '../lib/supabaseClient';
 
@@ -44,15 +44,20 @@ const Moments: React.FC = () => {
   const navigate = useNavigate();
   const [moments, setMoments] = useState<Moment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Carregar dados reais
   useEffect(() => {
     const fetchMoments = async () => {
       try {
+        setLoading(true);
+        setError(null);
         const data = await momentService.getMoments();
-        setMoments(data);
-      } catch (error) {
-        console.error(error);
+        setMoments(data || []);
+      } catch (err) {
+        console.error('Erro ao buscar momentos:', err);
+        setError('Não foi possível carregar os momentos');
+        setMoments([]);
       } finally {
         setLoading(false);
       }
@@ -77,12 +82,27 @@ const Moments: React.FC = () => {
 
       <div className="grid gap-8">
         {loading && (
-            <div className="text-center py-10 text-cozy-sageLight animate-pulse">
-                carregando memórias...
+            <div className="text-center py-10 flex flex-col items-center gap-4">
+                <Loader2 size={32} className="text-cozy-sage animate-spin" />
+                <p className="text-cozy-sageLight font-serif">carregando memórias...</p>
             </div>
         )}
 
-        {!loading && moments.length === 0 && (
+        {error && (
+            <div className="text-center py-20 bg-white rounded-[2.5rem] border border-cozy-clay/30">
+                 <p className="text-cozy-clay text-lg font-serif mb-4">⚠️</p>
+                 <p className="text-cozy-deep font-serif font-bold mb-2">Oops!</p>
+                 <p className="text-cozy-sageDark text-sm mb-6">{error}</p>
+                 <button 
+                   onClick={() => window.location.reload()}
+                   className="px-6 py-2 bg-cozy-deep text-white rounded-full text-sm font-bold hover:bg-cozy-charcoal transition-colors"
+                 >
+                   tentar novamente
+                 </button>
+            </div>
+        )}
+
+        {!loading && !error && moments.length === 0 && (
             <div className="text-center py-20 bg-white rounded-[2.5rem] border border-dashed border-cozy-sageLight/30">
                  <Camera size={32} className="mx-auto text-cozy-sand mb-2" />
                  <p className="text-cozy-sageDark font-serif italic">nenhum momento guardado ainda.</p>
