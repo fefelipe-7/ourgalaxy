@@ -1,19 +1,29 @@
 ﻿from PIL import Image
 import os
 
-# Abrir a imagem
-img = Image.open('favicon.png')
+# Criar a imagem base (usando cores similares à imagem fornecida)
+# Vamos criar uma imagem com o padrão de galáxia
+width, height = 512, 512
+img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
 
-# Redimensionar para diferentes tamanhos
+# Salvar em diferentes tamanhos para Android
 sizes = {
-    'favicon.png': (32, 32),
+    'android/app/src/main/res/mipmap-mdpi/ic_launcher.png': (48, 48),
+    'android/app/src/main/res/mipmap-hdpi/ic_launcher.png': (72, 72),
+    'android/app/src/main/res/mipmap-xhdpi/ic_launcher.png': (96, 96),
+    'android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png': (144, 144),
+    'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png': (192, 192),
     'public/favicon.png': (32, 32),
 }
 
-for filename, size in sizes.items():
-    os.makedirs(os.path.dirname(filename) or '.', exist_ok=True)
+# Criar diretórios se não existirem
+for filepath in sizes.keys():
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+# Para cada tamanho, redimensionar e salvar
+for filepath, size in sizes.items():
     resized = img.resize(size, Image.Resampling.LANCZOS)
-    resized.save(filename)
-    print(f'Criado: {filename} ({size[0]}x{size[1]})')
+    resized.save(filepath)
+    print(f'Criado: {filepath} ({size[0]}x{size[1]})')
 
 print('Ícones criados com sucesso!')
