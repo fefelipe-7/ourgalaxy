@@ -45,8 +45,8 @@ const Welcome: React.FC = () => {
              <div className="relative w-48 h-48 mx-auto">
                 <div className="absolute inset-0 bg-cozy-sand rounded-full opacity-30 animate-pulse"></div>
                 <img 
-                    src="https://picsum.photos/seed/calm/400/400" 
-                    alt="Calm" 
+                    src="/welcome-cats.png" 
+                    alt="Our Galaxy" 
                     className="relative w-full h-full object-cover rounded-full shadow-soft border-4 border-white"
                 />
              </div>
@@ -58,7 +58,7 @@ const Welcome: React.FC = () => {
           onClick={() => navigate('/home')}
           className="group w-full bg-cozy-deep text-white text-lg font-bold py-5 rounded-[2rem] shadow-float hover:bg-cozy-charcoal active:scale-95 transition-all duration-300 flex items-center justify-between px-8"
         >
-          <span>Entrar no silêncio</span>
+          <span>mergulhar na galáxia</span>
           <div className="bg-white/10 p-2 rounded-full group-hover:translate-x-1 transition-transform">
              <ArrowRight size={20} className="text-cozy-cream" />
           </div>
